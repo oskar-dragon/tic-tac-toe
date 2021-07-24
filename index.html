@@ -14,26 +14,26 @@
     <div class="container">
       <h1 class="title">Tic-Tac-Toe</h1>
 
-      <form class="player-form">
+      <form class="player-form" action="#">
         <label for="player1">Player 1 (O)</label>
-        <input type="text" id="player1name" name="player1" required />
+        <input type="text" id="player1name" name="player1" placeholder="Your name" required />
         <label for="player2">Player 2 (X)</label>
-        <input type="text" id="player2name" name="player2" required />
-        <button class="btn">Start</button>
+        <input type="text" id="player2name" name="player2" placeholder="Your name" required />
+        <button type="submit" class="btn btn--start">Start</button>
       </form>
 
       <div class="gameboard hide">
-        <div class="controls">
-          <button class="btn btn--start hide">Start</button>
-          <button class="btn btn--restart hide">Restart</button>
-        </div>
-
         <p class="game-status"><strong class="game-status__player-name">Player 1</strong> make your move</p>
 
         <div class="board">
           <div class="squares"></div>
         </div>
       </div>
+    </div>
+
+    <div class="winning-message hide">
+      <h2 class="winning-message__text"><span class="winner">Oskar</span> wins!</h2>
+      <button class="btn btn--restart">Restart</button>
     </div>
 
     <script src="index.pack.js"></script>

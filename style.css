@@ -40,6 +40,10 @@ h1 {
   max-width: 600px;
 }
 
+.hide {
+  display: none !important;
+}
+
 .btn {
   background: none;
   color: #fff;
@@ -48,7 +52,7 @@ h1 {
   background: #ffffff;
   color: #4d8056;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   border-radius: 3px;
   padding: 0.8em 1.5em;
@@ -102,6 +106,10 @@ input[type="text"] {
   transition: border-color 0.2s;
 }
 
+input[type="text"]::placeholder {
+  color: rgba(255, 255, 255, 0.459);
+}
+
 input[type="text"]:focus,
 input[type="text"]:hover {
   border-color: #ffffff;
@@ -109,6 +117,8 @@ input[type="text"]:hover {
 .game-status {
   margin-bottom: 5em;
 }
+
+/* Gameboard */
 
 .board {
   position: relative;
@@ -141,6 +151,20 @@ input[type="text"]:hover {
   background: #ffffff1c;
 }
 
-.hide {
-  visibility: hidden;
+.winning-message {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.winning-message__text {
+  font-size: 3rem;
+  margin-bottom: 0.5em;
 }
