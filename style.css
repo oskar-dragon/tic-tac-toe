@@ -18,10 +18,6 @@ body {
 }
 
 /*============
-  Layout
-  ==============*/
-
-/*============
   Typograhy
   ==============*/
 
@@ -39,16 +35,9 @@ h1 {
   ==============*/
 
 .container {
-  margin: 2em auto;
+  margin: 0.5em auto;
   width: 95%;
   max-width: 600px;
-}
-
-.controls {
-  margin: 3em 0;
-
-  display: flex;
-  justify-content: center;
 }
 
 .btn {
@@ -56,14 +45,14 @@ h1 {
   color: #fff;
   border: none;
   cursor: pointer;
-  background: rgb(255, 255, 255);
+  background: #ffffff;
   color: #4d8056;
   font-size: 1rem;
   font-weight: 600;
   text-transform: uppercase;
   border-radius: 3px;
   padding: 0.8em 1.5em;
-  box-shadow: 0 5px rgba(235, 235, 235, 1);
+  box-shadow: 0 5px #ebebeb;
 }
 
 .btn:focus,
@@ -80,13 +69,50 @@ h1 {
   margin-left: 1.5em;
 }
 
+.title {
+  font-size: 4rem;
+}
+
+/* Form */
+
+.player-form {
+  width: 50%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+input[type="text"] {
+  margin-bottom: 1.5em;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid;
+  border-color: #96b19c;
+  outline: none;
+  padding: 1em 0;
+  color: #fff;
+  font-size: 1.2rem;
+
+  transition: border-color 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="text"]:hover {
+  border-color: #ffffff;
+}
 .game-status {
   margin-bottom: 5em;
 }
 
-.gameboard {
+.board {
   position: relative;
-  background-color: rgba(255, 255, 255, 0.377);
+  background-color: #ffffff60;
   width: 100%;
   padding-top: 100%;
 }
