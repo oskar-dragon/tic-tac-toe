@@ -151,6 +151,16 @@ input[type="text"]:hover {
   background: #ffffff1c;
 }
 
+.circle-icon {
+  filter: invert(100%);
+  width: 80%;
+}
+
+.cross-icon {
+  filter: invert(100%);
+  width: 100%;
+}
+
 .winning-message {
   position: fixed;
   top: 0;
