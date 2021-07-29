@@ -1,72 +1,118 @@
-/* 
-1. Create a factory function that will create players - Done
-2. Create function that will render of the gameboard array to the webpage
-3. Create function that allows palyers to add marks to specific spot on the board
-4. Create a logic that checks when the game is over (should check for 3 in a row and a tie).
-When the game is over, a restart button should show up
-5. Create an interface where players can put their names. It should include start button
-6. Create a display element, that congratulates the winning player
+let board = ["", "", "", "", "", "", "", "", ""];
+let circleTurn = true;
+let player1;
+let player2;
+const winningCombinations = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6],
+];
 
-Optional: create an AI so that player can play against computer.
-- Start by getting a computer to make random move
-- Once you’ve gotten that, work on making the computer smart. It is possible to create an unbeatable
- AI using the minimax algorithm (read about it here, some googling will help you out with this one)
-*/
+const Player = (name, marker) => {
+  const getName = () => name;
+  const getMarker = () => marker;
 
-const CreatePlayer = (name, marker) => {
-  return { name, marker };
+  return { getName, getMarker };
 };
+// ELEMENT SELECTORS
+const playerFormEl = document.querySelector(".player-form");
+const gameBoardElement = document.querySelector(".gameboard");
+const gameBoardSquareEl = document.querySelector(".squares");
+const gameStatusSelection = document.querySelector(".game-status__player-name");
+const winnerMessageEl = document.querySelector(".winning-message");
+const winnerText = document.querySelector(".winner");
+const restartBtn = document.querySelector(".btn--restart");
 
-const playerFromEl = document.querySelector(".player-form");
-const gameBoardEl = document.querySelector(".gameboard");
+// EVENT LISTENERS
+playerFormEl.addEventListener("submit", startGame);
+restartBtn.addEventListener("click", restartGame);
 
-playerFromEl.addEventListener("submit", startGame);
-
+// FUNCTIONS
 function startGame(e) {
   e.preventDefault();
 
   const formData = new FormData(e.target);
   const player1Name = formData.get("player1");
-  const player2Name = formData.get("palyer2");
-  const player1 = CreatePlayer(player1Name, "circle");
-  const player2 = CreatePlayer(player2Name, "close");
-
-  playerFromEl.classList.add("hide");
-  gameBoardEl.classList.remove("hide");
-  gameBoard.render();
+  const player2Name = formData.get("player2");
+  player1 = Player(player1Name, "o");
+  player2 = Player(player2Name, "x");
+  playerTurn();
+  playerFormEl.classList.add("hide");
+  gameBoardElement.classList.remove("hide");
+  renderBoard();
 }
 
-const gameBoard = (() => {
-  const board = ["x", "o", "", "", "", "", "", "", ""];
+function renderBoard() {
+  board.forEach((el, index) => {
+    let newElement = document.createElement("div");
+    newElement.classList.add("square", "material-icons-outlined");
+    newElement.dataset.index = index;
+    newElement.addEventListener("click", placeMark);
+    gameBoardSquareEl.appendChild(newElement);
+  });
+}
 
-  let parentEl = document.querySelector(".squares");
+function updateBoard() {
+  const squareEls = document.querySelectorAll(".square");
+  squareEls.forEach((el, index) => {
+    el.innerText = board[index];
+    el.innerHTML =
+      board[index] === "x"
+        ? `<img class="cross-icon" src="icons/cross.svg">`
+        : board[index] === "o"
+        ? `<img class="circle-icon" src="icons/circle.svg">`
+        : "";
+  });
+}
 
-  const render = () => {
-    board.forEach((el, index) => {
-      let newElement = document.createElement("div");
-      newElement.classList.add("square", "material-icons-outlined");
-      newElement.dataset.index = index + 1;
-      newElement.innerHTML =
-        el === "x"
-          ? `<img class="circle-icon" src="icons/circle.svg">`
-          : el === "o"
-          ? `<img class="cross-icon" src="icons/cross.svg">`
-          : "";
-      parentEl.appendChild(newElement);
-    });
-  };
-
-  return {
-    render,
-  };
-})();
-
-const displayController = (() => {
-  const squares = document.querySelectorAll(".square");
-
-  const addMarker = (e) => {};
-
-  for (const square of squares) {
-    square.addEventListener("click", addMarker, { once: true });
+function placeMark(e) {
+  if (circleTurn) {
+    board[e.target.dataset.index] = "o";
+    circleTurn = !circleTurn;
+  } else {
+    board[e.target.dataset.index] = "x";
+    circleTurn = !circleTurn;
   }
-})();
+
+  updateBoard();
+
+  if (checkWin()) {
+    winnerText.innerText = circleTurn ? player1.getName() : player2.getName();
+    winnerMessageEl.classList.remove("hide");
+  } else {
+    playerTurn();
+  }
+}
+
+function playerTurn() {
+  if (circleTurn) {
+    gameStatusSelection.innerText = player1.getName();
+  } else {
+    gameStatusSelection.innerText = player2.getName();
+  }
+}
+
+function checkWin(circleTurn) {
+  const currentMark = circleTurn ? "x" : "o";
+
+  return winningCombinations.some((combination) => {
+    return combination.every((index) => {
+      return board[index].includes(currentMark);
+    });
+  });
+}
+
+function restartGame() {
+  for (let index in board) {
+    board[index] = "";
+  }
+
+  updateBoard();
+
+  winnerMessageEl.classList.add("hide");
+}
