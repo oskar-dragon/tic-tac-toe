@@ -1,3 +1,9 @@
+/*
+TO DO:
+1. Create funtion that will check if its draw
+2. Check why after restart names and "Xs" are mixed up
+*/
+
 let board = ["", "", "", "", "", "", "", "", ""];
 let circleTurn = true;
 let player1;
@@ -41,7 +47,7 @@ function startGame(e) {
   const player2Name = formData.get("player2");
   player1 = Player(player1Name, "o");
   player2 = Player(player2Name, "x");
-  playerTurn();
+  gameStatusSelection.innerText = player1.getName();
   playerFormEl.classList.add("hide");
   gameBoardElement.classList.remove("hide");
   renderBoard();
@@ -52,9 +58,35 @@ function renderBoard() {
     let newElement = document.createElement("div");
     newElement.classList.add("square", "material-icons-outlined");
     newElement.dataset.index = index;
-    newElement.addEventListener("click", placeMark);
+    newElement.addEventListener("click", handleClick, { once: true });
     gameBoardSquareEl.appendChild(newElement);
   });
+}
+
+function handleClick(e) {
+  const cell = e.target;
+  const currentMarker = circleTurn ? player1.getMarker() : player2.getMarker();
+  placeMark(cell, currentMarker);
+  updateBoard();
+
+  if (checkWin(currentMarker)) {
+    winnerText.innerText = circleTurn ? player1.getName() : player2.getName();
+    winnerMessageEl.classList.remove("hide");
+  } else if (checkDraw()) {
+    winnerText.innerText = "Nobody";
+    winnerMessageEl.classList.remove("hide");
+  } else {
+    swapTurns();
+    updateStatus();
+  }
+}
+
+function placeMark(cell, currentMarker) {
+  board[cell.dataset.index] = currentMarker;
+}
+
+function swapTurns() {
+  circleTurn = !circleTurn;
 }
 
 function updateBoard() {
@@ -70,26 +102,7 @@ function updateBoard() {
   });
 }
 
-function placeMark(e) {
-  if (circleTurn) {
-    board[e.target.dataset.index] = "o";
-    circleTurn = !circleTurn;
-  } else {
-    board[e.target.dataset.index] = "x";
-    circleTurn = !circleTurn;
-  }
-
-  updateBoard();
-
-  if (checkWin()) {
-    winnerText.innerText = circleTurn ? player1.getName() : player2.getName();
-    winnerMessageEl.classList.remove("hide");
-  } else {
-    playerTurn();
-  }
-}
-
-function playerTurn() {
+function updateStatus() {
   if (circleTurn) {
     gameStatusSelection.innerText = player1.getName();
   } else {
@@ -97,14 +110,16 @@ function playerTurn() {
   }
 }
 
-function checkWin(circleTurn) {
-  const currentMark = circleTurn ? "x" : "o";
-
+function checkWin(currentMarker) {
   return winningCombinations.some((combination) => {
     return combination.every((index) => {
-      return board[index].includes(currentMark);
+      return board[index].includes(currentMarker);
     });
   });
+}
+
+function checkDraw() {
+  return board.every((el) => el !== "");
 }
 
 function restartGame() {
@@ -112,7 +127,12 @@ function restartGame() {
     board[index] = "";
   }
 
-  updateBoard();
+  clearBoard();
+  renderBoard();
 
   winnerMessageEl.classList.add("hide");
+}
+
+function clearBoard() {
+  gameBoardSquareEl.innerHTML = "";
 }
