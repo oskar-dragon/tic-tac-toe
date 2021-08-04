@@ -3,28 +3,75 @@ TO DO:
 1. Create funtion that will check if its draw
 2. Check why after restart names and "Xs" are mixed up
 */
-
-let board = ["", "", "", "", "", "", "", "", ""];
 let circleTurn = true;
-let player1;
-let player2;
-const winningCombinations = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6],
-];
 
-const Player = (name, marker) => {
-  const getName = () => name;
-  const getMarker = () => marker;
+class Player {
+  constructor(name, marker) {
+    this.name = name;
+    this.marker = marker;
+  }
 
-  return { getName, getMarker };
-};
+  get getName() {
+    return this.name;
+  }
+
+  get getMarker() {
+    return this.marker;
+  }
+}
+
+class Gameboard {
+  winningCombinations = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+
+  constructor(board) {
+    this.board = board;
+  }
+
+  render() {
+    board.forEach((el, index) => {
+      let newElement = document.createElement("div");
+      newElement.classList.add("square", "material-icons-outlines");
+      newElement.dataset.index = index;
+      newElement.addEventListener("click", handleClick, { once: true });
+      this.gameBoardSquareEl.appendChild(newElement);
+    });
+  }
+
+  checkDraw() {
+    return board.every((el) => el !== "");
+  }
+
+  checkWin(currentMarker) {
+    return winningCombinations.some((combination) => {
+      return combination.every((index) => {
+        return board[index].includes(currentMarker);
+      });
+    });
+  }
+
+  clearBoard() {
+    this.gameBoardSquareEl.innerHTML = "";
+  }
+}
+
+const newBoard = new Gameboard(["", "", "", "", "", "", "", "", ""]);
+const player1 = new Player("Oskar", "o");
+const player2 = new Player("Dragon", "x");
+// const Player = (name, marker) => {
+//   const getName = () => name;
+//   const getMarker = () => marker;
+
+//   return { getName, getMarker };
+// };
 // ELEMENT SELECTORS
 const playerFormEl = document.querySelector(".player-form");
 const gameBoardElement = document.querySelector(".gameboard");
@@ -108,18 +155,6 @@ function updateStatus() {
   } else {
     gameStatusSelection.innerText = player2.getName();
   }
-}
-
-function checkWin(currentMarker) {
-  return winningCombinations.some((combination) => {
-    return combination.every((index) => {
-      return board[index].includes(currentMarker);
-    });
-  });
-}
-
-function checkDraw() {
-  return board.every((el) => el !== "");
 }
 
 function restartGame() {
