@@ -100,7 +100,7 @@ function startGame(e) {
   const player2Name = formData.get("player2");
   game.players[0] = new Player(player1Name, "o");
   game.players[1] = new Player(player2Name, "x");
-  gameStatusSelection.innerText = game.players[0].getName;
+  updateStatus();
   playerFormEl.classList.add("hide");
   gameBoardElement.classList.remove("hide");
   game.gameboard.render();
