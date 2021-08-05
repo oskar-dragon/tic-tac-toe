@@ -38,6 +38,19 @@ class Gameboard {
     });
   }
 
+  updateBoard() {
+    const squareEls = document.querySelectorAll(".square");
+    squareEls.forEach((el, index) => {
+      el.innerText = this.board[index];
+      el.innerHTML =
+        this.board[index] === "x"
+          ? `<img class="cross-icon" src="icons/cross.svg">`
+          : this.board[index] === "o"
+          ? `<img class="circle-icon" src="icons/circle.svg">`
+          : "";
+    });
+  }
+
   placeMark(cell, currentMarker) {
     this.board[cell.dataset.index] = currentMarker;
   }
@@ -65,14 +78,9 @@ class Game {
   swapTurns() {
     this.circleTurn = !this.circleTurn;
   }
-
-  restart() {
-    for (let index in this.gameboard.board) {
-      this.board.board[index] = "";
-    }
-  }
 }
-// ELEMENT SELECTORS
+
+let game = new Game();
 const playerFormEl = document.querySelector(".player-form");
 const gameBoardElement = document.querySelector(".gameboard");
 const gameBoardSquareEl = document.querySelector(".squares");
@@ -81,13 +89,9 @@ const winnerMessageEl = document.querySelector(".winning-message");
 const winnerText = document.querySelector(".winner");
 const restartBtn = document.querySelector(".btn--restart");
 
-// EVENT LISTENERS
 playerFormEl.addEventListener("submit", startGame);
 restartBtn.addEventListener("click", restartGame);
 
-let game = new Game();
-
-// FUNCTIONS
 function startGame(e) {
   e.preventDefault();
 
@@ -106,7 +110,7 @@ function handleClick(e) {
   const cell = e.target;
   const currentMarker = game.circleTurn ? game.players[0].getMarker : game.players[1].getMarker;
   game.gameboard.placeMark(cell, currentMarker);
-  updateBoard();
+  game.gameboard.updateBoard();
 
   if (game.gameboard.checkWin(currentMarker)) {
     winnerText.innerText = game.circleTurn ? game.players[0].getName : game.players[1].getName;
@@ -118,18 +122,6 @@ function handleClick(e) {
     game.swapTurns();
     updateStatus();
   }
-}
-function updateBoard() {
-  const squareEls = document.querySelectorAll(".square");
-  squareEls.forEach((el, index) => {
-    el.innerText = game.gameboard.board[index];
-    el.innerHTML =
-      game.gameboard.board[index] === "x"
-        ? `<img class="cross-icon" src="icons/cross.svg">`
-        : game.gameboard.board[index] === "o"
-        ? `<img class="circle-icon" src="icons/circle.svg">`
-        : "";
-  });
 }
 
 function updateStatus() {
@@ -145,11 +137,7 @@ function restartGame() {
     game.gameboard.board[index] = "";
   }
 
-  clearBoard();
+  gameBoardSquareEl.innerHTML = "";
   game.gameboard.render();
   winnerMessageEl.classList.add("hide");
-}
-
-function clearBoard() {
-  gameBoardSquareEl.innerHTML = "";
 }
