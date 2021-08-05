@@ -1,18 +1,11 @@
-/*
-TO DO:
-1. Create funtion that will check if its draw
-2. Check why after restart names and "Xs" are mixed up
-*/
-let circleTurn = true;
-
 class Player {
-  constructor(name, marker) {
-    this.name = name;
+  constructor(playerName, marker) {
+    this.playerName = playerName;
     this.marker = marker;
   }
 
   get getName() {
-    return this.name;
+    return this.playerName;
   }
 
   get getMarker() {
@@ -21,57 +14,64 @@ class Player {
 }
 
 class Gameboard {
-  winningCombinations = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-
-  constructor(board) {
-    this.board = board;
+  constructor() {
+    this.board = ["", "", "", "", "", "", "", "", ""];
+    this.winningCombinations = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
   }
 
   render() {
-    board.forEach((el, index) => {
+    this.board.forEach((el, index) => {
       let newElement = document.createElement("div");
       newElement.classList.add("square", "material-icons-outlines");
       newElement.dataset.index = index;
       newElement.addEventListener("click", handleClick, { once: true });
-      this.gameBoardSquareEl.appendChild(newElement);
+      gameBoardSquareEl.appendChild(newElement);
     });
+  }
+
+  placeMark(cell, currentMarker) {
+    this.board[cell.dataset.index] = currentMarker;
   }
 
   checkDraw() {
-    return board.every((el) => el !== "");
+    return this.board.every((el) => el !== "");
   }
 
   checkWin(currentMarker) {
-    return winningCombinations.some((combination) => {
+    return this.winningCombinations.some((combination) => {
       return combination.every((index) => {
-        return board[index].includes(currentMarker);
+        return this.board[index].includes(currentMarker);
       });
     });
   }
-
-  clearBoard() {
-    this.gameBoardSquareEl.innerHTML = "";
-  }
 }
 
-const newBoard = new Gameboard(["", "", "", "", "", "", "", "", ""]);
-const player1 = new Player("Oskar", "o");
-const player2 = new Player("Dragon", "x");
-// const Player = (name, marker) => {
-//   const getName = () => name;
-//   const getMarker = () => marker;
+class Game {
+  constructor() {
+    this.gameboard = new Gameboard();
+    this.players = [new Player(), new Player()];
+    this.circleTurn = true;
+  }
 
-//   return { getName, getMarker };
-// };
+  swapTurns() {
+    this.circleTurn = !this.circleTurn;
+  }
+
+  restart() {
+    for (let index in this.gameboard.board) {
+      this.board.board[index] = "";
+    }
+  }
+}
 // ELEMENT SELECTORS
 const playerFormEl = document.querySelector(".player-form");
 const gameBoardElement = document.querySelector(".gameboard");
@@ -85,6 +85,8 @@ const restartBtn = document.querySelector(".btn--restart");
 playerFormEl.addEventListener("submit", startGame);
 restartBtn.addEventListener("click", restartGame);
 
+let game = new Game();
+
 // FUNCTIONS
 function startGame(e) {
   e.preventDefault();
@@ -92,79 +94,59 @@ function startGame(e) {
   const formData = new FormData(e.target);
   const player1Name = formData.get("player1");
   const player2Name = formData.get("player2");
-  player1 = Player(player1Name, "o");
-  player2 = Player(player2Name, "x");
-  gameStatusSelection.innerText = player1.getName();
+  game.players[0] = new Player(player1Name, "o");
+  game.players[1] = new Player(player2Name, "x");
+  gameStatusSelection.innerText = game.players[0].getName;
   playerFormEl.classList.add("hide");
   gameBoardElement.classList.remove("hide");
-  renderBoard();
-}
-
-function renderBoard() {
-  board.forEach((el, index) => {
-    let newElement = document.createElement("div");
-    newElement.classList.add("square", "material-icons-outlined");
-    newElement.dataset.index = index;
-    newElement.addEventListener("click", handleClick, { once: true });
-    gameBoardSquareEl.appendChild(newElement);
-  });
+  game.gameboard.render();
 }
 
 function handleClick(e) {
   const cell = e.target;
-  const currentMarker = circleTurn ? player1.getMarker() : player2.getMarker();
-  placeMark(cell, currentMarker);
+  const currentMarker = game.circleTurn ? game.players[0].getMarker : game.players[1].getMarker;
+  game.gameboard.placeMark(cell, currentMarker);
   updateBoard();
 
-  if (checkWin(currentMarker)) {
-    winnerText.innerText = circleTurn ? player1.getName() : player2.getName();
+  if (game.gameboard.checkWin(currentMarker)) {
+    winnerText.innerText = game.circleTurn ? game.players[0].getName : game.players[1].getName;
     winnerMessageEl.classList.remove("hide");
-  } else if (checkDraw()) {
+  } else if (game.gameboard.checkDraw()) {
     winnerText.innerText = "Nobody";
     winnerMessageEl.classList.remove("hide");
   } else {
-    swapTurns();
+    game.swapTurns();
     updateStatus();
   }
 }
-
-function placeMark(cell, currentMarker) {
-  board[cell.dataset.index] = currentMarker;
-}
-
-function swapTurns() {
-  circleTurn = !circleTurn;
-}
-
 function updateBoard() {
   const squareEls = document.querySelectorAll(".square");
   squareEls.forEach((el, index) => {
-    el.innerText = board[index];
+    el.innerText = game.gameboard.board[index];
     el.innerHTML =
-      board[index] === "x"
+      game.gameboard.board[index] === "x"
         ? `<img class="cross-icon" src="icons/cross.svg">`
-        : board[index] === "o"
+        : game.gameboard.board[index] === "o"
         ? `<img class="circle-icon" src="icons/circle.svg">`
         : "";
   });
 }
 
 function updateStatus() {
-  if (circleTurn) {
-    gameStatusSelection.innerText = player1.getName();
+  if (game.circleTurn) {
+    gameStatusSelection.innerText = game.players[0].getName;
   } else {
-    gameStatusSelection.innerText = player2.getName();
+    gameStatusSelection.innerText = game.players[1].getName;
   }
 }
 
 function restartGame() {
-  for (let index in board) {
-    board[index] = "";
+  for (let index in game.gameboard.board) {
+    game.gameboard.board[index] = "";
   }
 
   clearBoard();
-  renderBoard();
-
+  game.gameboard.render();
   winnerMessageEl.classList.add("hide");
 }
 
